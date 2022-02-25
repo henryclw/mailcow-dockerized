@@ -1,7 +1,7 @@
 version: '2.1'
 services:
 
-    unbound-mailcow:
+    mailcow-unbound:
       image: mailcow/unbound:1.15
       environment:
         - TZ=${TZ}
@@ -16,7 +16,7 @@ services:
           aliases:
             - unbound
 
-    mysql-mailcow:
+    mailcow-mysql:
       image: mariadb:10.5
       depends_on:
         - unbound-mailcow
@@ -40,7 +40,7 @@ services:
           aliases:
             - mysql
 
-    redis-mailcow:
+    mailcow-redis:
       image: redis:6-alpine
       volumes:
         - redis-vol-1:/data/:Z
@@ -57,7 +57,7 @@ services:
           aliases:
             - redis
 
-    clamd-mailcow:
+    mailcow-clamd:
       image: mailcow/clamd:1.43
       restart: always
       dns:
@@ -72,7 +72,7 @@ services:
           aliases:
             - clamd
 
-    rspamd-mailcow:
+    mailcow-rspamd:
       image: mailcow/rspamd:1.79
       stop_grace_period: 30s
       depends_on:
@@ -102,7 +102,7 @@ services:
           aliases:
             - rspamd
 
-    php-fpm-mailcow:
+    mailcow-php-fpm:
       image: mailcow/phpfpm:1.78
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -164,7 +164,7 @@ services:
           aliases:
             - phpfpm
 
-    sogo-mailcow:
+    mailcow-sogo:
       image: mailcow/sogo:1.106
       environment:
         - DBNAME=${DBNAME}
@@ -211,7 +211,7 @@ services:
           aliases:
             - sogo
 
-    dovecot-mailcow:
+    mailcow-dovecot:
       image: mailcow/dovecot:1.159
       depends_on:
         - mysql-mailcow
@@ -291,7 +291,7 @@ services:
           aliases:
             - dovecot
 
-    postfix-mailcow:
+    mailcow-postfix:
       image: mailcow/postfix:1.66
       depends_on:
         - mysql-mailcow
@@ -337,7 +337,7 @@ services:
           aliases:
             - memcached
 
-    nginx-mailcow:
+    mailcow-nginx:
       depends_on:
         - sogo-mailcow
         - php-fpm-mailcow
@@ -382,7 +382,7 @@ services:
           aliases:
             - nginx
 
-    acme-mailcow:
+    mailcow-acme:
       depends_on:
         - nginx-mailcow
       image: mailcow/acme:1.81
@@ -420,7 +420,7 @@ services:
           aliases:
             - acme
 
-    netfilter-mailcow:
+    mailcow-netfilter:
       image: mailcow/netfilter:1.46
       stop_grace_period: 30s
       depends_on:
@@ -443,7 +443,7 @@ services:
       volumes:
         - /lib/modules:/lib/modules:ro
 
-    watchdog-mailcow:
+    mailcow-watchdog:
       image: mailcow/watchdog:1.96
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -505,7 +505,7 @@ services:
           aliases:
             - watchdog
 
-    dockerapi-mailcow:
+    mailcow-dockerapi:
       image: mailcow/dockerapi:1.41
       security_opt:
         - label=disable
@@ -523,7 +523,7 @@ services:
           aliases:
             - dockerapi
 
-    solr-mailcow:
+    mailcow-solr:
       image: mailcow/solr:1.8.1
       restart: always
       volumes:
@@ -539,7 +539,7 @@ services:
           aliases:
             - solr
 
-    olefy-mailcow:
+    mailcow-olefy:
       image: mailcow/olefy:1.8.1
       restart: always
       environment:
@@ -557,7 +557,7 @@ services:
           aliases:
             - olefy
 
-    ofelia-mailcow:
+    mailcow-ofelia:
       image: mcuadros/ofelia:latest
       restart: always
       command: daemon --docker
@@ -577,7 +577,7 @@ services:
           aliases:
             - ofelia
 
-    ipv6nat-mailcow:
+    mailcow-ipv6nat:
       depends_on:
         - unbound-mailcow
         - mysql-mailcow
